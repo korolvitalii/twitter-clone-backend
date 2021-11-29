@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as LocalStraregy } from 'passport-local';
-import { UserModel } from '../models/UserModel';
-import { generateBcrypt } from '../utils/generateHash';
+import { UserModel, UserModelInterface } from '../models/UserModel';
+import bcrypt from 'bcrypt';
 
 passport.use(
   new LocalStraregy(
@@ -11,28 +11,34 @@ passport.use(
     },
     async (email, password, done): Promise<void> => {
       try {
-        console.log('I am here, catch>passport');
-
-        //   const user = await UserModel.findOne({ $or: [{ email } , { username }] }).exec();
         const user = await UserModel.findOne({ email }).exec();
-
+        console.log(user);
         if (!user) {
           return done(null, false, { message: 'User not found' });
         }
 
-        const validate = user.password === generateBcrypt(password);
-
-        if (!validate) {
-          return done(null, false, { message: 'Wrong Password' });
-        }
-
-        return done(null, user, { message: 'Logged in Successfully' });
+        bcrypt.compare(password, user.password, function (err, result) {
+          if (result) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: 'Wrong Password' });
+          }
+        });
       } catch (error) {
-        console.log('I am here, catch>passport');
         return done(error);
       }
     },
   ),
 );
+
+passport.serializeUser((user: any, done) => {
+  done(null, user?._id);
+});
+
+passport.deserializeUser((id, done) => {
+  UserModel.findById(id, (err: any, user: UserModelInterface) => {
+    done(err, user);
+  });
+});
 
 export { passport };
