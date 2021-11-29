@@ -33,7 +33,7 @@ export const registerValidation = [
     })
     .withMessage('password length min 6 symbols')
     .custom((value, { req }) => {
-      if (value !== req.body.password) {
+      if (value !== req.body.password2) {
         throw new Error('password does not match');
       } else {
         return value;

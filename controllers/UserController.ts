@@ -47,7 +47,7 @@ class UserController {
           subject: 'Confirm your email twitter-clone pet project',
           html: `To confirm your mail, go <a href="http://localhost:${
             process.env.PORT || 8888
-          }/users/verify?hash=${data.confirmHash}">this link</a>`,
+          }/auth/verify?hash=${data.confirmHash}">this link</a>`,
         },
         (err: Error | null) => {
           if (err) {
