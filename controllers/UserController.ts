@@ -1,8 +1,9 @@
 import { Response, Request } from 'express';
 import { validationResult } from 'express-validator';
-import { UserModel, UserModelInterface } from '../models/UserModel';
+import { UserModel, UserModelInterface, UserModellDocumentInterface } from '../models/UserModel';
 import { generateBcrypt, generateMDS } from '../utils/generateHash';
 import { sendMail } from '../utils/sendMail';
+import jwt from 'jsonwebtoken';
 
 class UserController {
   async index(req: Request, res: Response): Promise<void> {
@@ -78,6 +79,7 @@ class UserController {
         res.status(400).send();
         return;
       }
+      //@ts-ignore
       const user = await UserModel.findOne({ confirmHash: hash }).exec();
 
       if (user) {
@@ -109,6 +111,35 @@ class UserController {
       res.json({
         status: 'error from try',
         data: user,
+      });
+    } catch (error) {
+      res.status(500).send();
+      return;
+    }
+  }
+  async afterLogin(req: Request, res: Response): Promise<void> {
+    try {
+      const user = req.user ? (req.user as UserModellDocumentInterface).toJSON() : undefined;
+
+      res.json({
+        status: 'success',
+        data: {
+          ...user,
+          token: jwt.sign({ data: req.user }, process.env.SECRET_KEY || '123', {
+            expiresIn: '30d',
+          }),
+        },
+      });
+    } catch (error) {
+      res.status(500).send();
+      return;
+    }
+  }
+  async getUserData(req: Request, res: Response): Promise<void> {
+    try {
+      res.json({
+        status: 'success',
+        data: req.user,
       });
     } catch (error) {
       res.status(500).send();

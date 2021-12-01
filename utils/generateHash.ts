@@ -7,16 +7,11 @@ export const generateMDS = (value: string): string => {
 
 export const generateBcrypt = (value: string): string => bcrypt.hashSync(value, 5);
 
-const saltRounds = process.env.SALT_ROUNT || 5;
-
-export const comparePassword = (password: any, password2: any): boolean => {
+export const comparePassword = (password: string, password2: string): boolean => {
   let isValid = false;
-  bcrypt.compare(password2, password, function (err, result) {
+  bcrypt.compare(password2, password, function (_, result) {
     if (result) {
       isValid = true;
-      console.log('It matches!');
-    } else {
-      console.log('Invalid password!');
     }
   });
   return isValid;

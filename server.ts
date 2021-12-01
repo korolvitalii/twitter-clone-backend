@@ -8,7 +8,8 @@ import './core/db';
 import { passport } from './core/passport';
 
 /*
-1. app.get show - показати юзера по ід
+TODO:
+1. 
 
 */
 const app = express();
@@ -17,12 +18,17 @@ app.use(express.json());
 app.use(passport.initialize());
 
 app.get('/users', UserCtrl.index);
-app.get('/users/:id', registerValidation, UserCtrl.show);
+app.get(
+  '/users/me',
+  passport.authenticate('jwt', {
+    session: false,
+  }),
+  UserCtrl.getUserData,
+);
+app.get('/users/:id', UserCtrl.show);
 app.get('/auth/verify', registerValidation, UserCtrl.verify);
 app.post('/auth/signup', registerValidation, UserCtrl.create);
-app.post('/auth/signin', passport.authenticate('local'), function (req, res) {
-  res.json(req.user);
-});
+app.post('/auth/signin', passport.authenticate('local'), UserCtrl.afterLogin);
 
 app.listen(process.env.PORT, () => {
   console.log('SERVER is RUNNING  ');

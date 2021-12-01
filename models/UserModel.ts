@@ -13,9 +13,9 @@ export interface UserModelInterface {
   website?: string;
 }
 
-type UserModelModelDocument = UserModelInterface & Document;
+export type UserModellDocumentInterface = UserModelInterface & Document;
 
-const UserSchema = new Schema({
+const UserSchema = new Schema<UserModelInterface>({
   email: {
     unique: true,
     required: true,
@@ -53,4 +53,4 @@ UserSchema.methods.toJSON = function () {
   delete obj.confirmHash;
   return obj;
 };
-export const UserModel = model('User', UserSchema);
+export const UserModel = model<UserModellDocumentInterface>('User', UserSchema);
