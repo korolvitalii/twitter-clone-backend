@@ -6,6 +6,7 @@ import { UserCtrl } from './controllers/UserController';
 import { registerValidation } from './validators/register';
 import './core/db';
 import { passport } from './core/passport';
+import { TweetCtrl } from './controllers/TweetController';
 
 /*
 TODO:
@@ -29,6 +30,11 @@ app.get('/users/:id', UserCtrl.show);
 app.get('/auth/verify', registerValidation, UserCtrl.verify);
 app.post('/auth/signup', registerValidation, UserCtrl.create);
 app.post('/auth/signin', passport.authenticate('local'), UserCtrl.afterLogin);
+
+app.get('/tweet', TweetCtrl.index);
+app.get('/tweet:id', TweetCtrl.show);
+app.post('/tweet', TweetCtrl.create);
+// app.delete('tweet', TweetCtrl.delete);
 
 app.listen(process.env.PORT, () => {
   console.log('SERVER is RUNNING  ');
