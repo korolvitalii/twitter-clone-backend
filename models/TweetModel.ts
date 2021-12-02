@@ -15,7 +15,6 @@ const TweetSchema = new Schema<TweetModelInterface>({
     minlength: 1,
     maxLength: 280,
   },
-  //@ts-ignore
   user: {
     // required: true,
     ref: 'User',

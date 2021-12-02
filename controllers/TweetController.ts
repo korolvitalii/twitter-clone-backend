@@ -1,13 +1,8 @@
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import {
-  TweetModel,
-  TweetModelInterface,
-  TweetModellDocumentInterface,
-} from '../models/TweetModel';
-import { generateBcrypt, generateMDS } from '../utils/generateHash';
-import { sendMail } from '../utils/sendMail';
-import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import { TweetModel, TweetModelInterface } from '../models/TweetModel';
+import { UserModelInterface } from '../models/UserModel';
 
 class TweetController {
   async index(req: Request, res: Response): Promise<void> {
@@ -35,19 +30,21 @@ class TweetController {
         });
         return;
       }
+      const user = req.user as UserModelInterface;
+      if (user?._id) {
+        const data: TweetModelInterface = {
+          text: req.body.text,
+          user: user._id,
+        };
 
-      const data: TweetModelInterface = {
-        text: req.body.text,
-        user: req.body.user,
-      };
-
-      const tweet = await TweetModel.create(data);
-      tweet.save();
-      res.json({
-        status: 'success',
-        data: tweet,
-      });
-      return;
+        const tweet = await TweetModel.create(data);
+        tweet.save();
+        res.json({
+          status: 'success',
+          data: tweet,
+        });
+        return;
+      }
     } catch (error) {
       res.json({
         status: 'error',
@@ -55,76 +52,52 @@ class TweetController {
       });
     }
   }
-  async verify(req: Request, res: Response): Promise<void> {
-    try {
-      const hash = req.query.hash;
-
-      if (!hash) {
-        res.status(400).send();
-        return;
-      }
-      //@ts-ignore
-      const user = await TweetModel.findOne({ confirmHash: hash }).exec();
-
-      if (user) {
-        // user.confirmed = true;
-        user.save();
-        res.json({
-          status: 'success',
-        });
-      }
-    } catch (error) {
-      res.json({
-        status: 'error',
-        errors: JSON.stringify(error),
-      });
-    }
-  }
   async show(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.params.id;
-      const user = await TweetModel.findById(userId).exec();
-      if (user) {
+      const tweetId = req.params.id;
+      const tweet = await TweetModel.findById(tweetId).exec();
+      if (tweet) {
         res.json({
           status: 'success',
-          data: user,
+          data: tweet,
         });
       } else {
         res.status(400).send();
       }
-      res.json({
-        status: 'error from try',
-        data: user,
-      });
     } catch (error) {
       res.status(500).send();
       return;
     }
   }
-  async afterLogin(req: Request, res: Response): Promise<void> {
+  async delete(req: Request, res: Response): Promise<void> {
     try {
-      const user = req.user ? (req.user as TweetModellDocumentInterface).toJSON() : undefined;
+      const user = req.user;
+      console.log(user);
+      if (user) {
+        const tweetId = req.params.id;
+        const isValid = mongoose.Types.ObjectId.isValid(tweetId);
+        if (!isValid) {
+          res.status(400).send();
+          return;
+        }
+        const tweet = await TweetModel.findById(tweetId);
+        console.log(tweet && tweetId === tweet.user);
+        console.log(`tweet.user ==> ${tweet?.user}`);
+        console.log(`tweetId ==> ${tweetId}`);
 
-      res.json({
-        status: 'success',
-        data: {
-          ...user,
-          token: jwt.sign({ data: req.user }, process.env.SECRET_KEY || '123', {
-            expiresIn: '30d',
-          }),
-        },
-      });
-    } catch (error) {
-      res.status(500).send();
-      return;
-    }
-  }
-  async getUserData(req: Request, res: Response): Promise<void> {
-    try {
-      res.json({
-        status: 'success',
-        data: req.user,
-      });
+        if (tweet && tweetId === tweet.user) {
+          TweetModel.findByIdAndRemove(tweetId, (err: string) => {
+            if (err) {
+              res.status(400).send();
+              return;
+            } else {
+              res.send();
+            }
+          });
+        }
+        res.status(400).send();
+        return;
+      }
     } catch (error) {
       res.status(500).send();
       return;
