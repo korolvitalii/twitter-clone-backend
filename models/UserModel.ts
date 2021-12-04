@@ -15,38 +15,44 @@ export interface UserModelInterface {
 
 export type UserModellDocumentInterface = UserModelInterface & Document;
 
-const UserSchema = new Schema<UserModelInterface>({
-  email: {
-    unique: true,
-    required: true,
-    type: String,
+const UserSchema = new Schema<UserModelInterface>(
+  {
+    email: {
+      unique: true,
+      required: true,
+      type: String,
+    },
+    username: {
+      unique: true,
+      required: true,
+      type: String,
+    },
+    fullname: {
+      unique: true,
+      required: true,
+      type: String,
+    },
+    password: {
+      required: true,
+      type: String,
+    },
+    confirmed: {
+      type: Boolean,
+      default: false,
+    },
+    confirmHash: {
+      required: true,
+      type: String,
+    },
+    location: String,
+    about: String,
+    website: String,
   },
-  username: {
-    unique: true,
-    required: true,
-    type: String,
+  {
+    timestamps: true,
   },
-  fullname: {
-    unique: true,
-    required: true,
-    type: String,
-  },
-  password: {
-    required: true,
-    type: String,
-  },
-  confirmed: {
-    type: Boolean,
-    default: false,
-  },
-  confirmHash: {
-    required: true,
-    type: String,
-  },
-  location: String,
-  about: String,
-  website: String,
-});
+);
+
 UserSchema.methods.toJSON = function () {
   var obj = this.toObject();
   delete obj.password;

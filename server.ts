@@ -11,9 +11,11 @@ import { createTweetValidation } from './validators/createTweet';
 
 /*
 TODO:
-1. 
+1. update tweets
+2.
 
 */
+
 const app = express();
 
 app.use(express.json());
@@ -35,6 +37,7 @@ app.post('/auth/signin', passport.authenticate('local'), UserCtrl.afterLogin);
 app.get('/tweet', TweetCtrl.index);
 app.get('/tweet/:id', TweetCtrl.show);
 app.post('/tweet', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.create);
+app.patch('/tweet/:id', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.update);
 app.delete('/tweet/:id', passport.authenticate('jwt'), TweetCtrl.delete);
 
 app.listen(process.env.PORT, () => {
