@@ -34,7 +34,7 @@ app.get('/auth/verify', registerValidation, UserCtrl.verify);
 app.post('/auth/signup', registerValidation, UserCtrl.create);
 app.post('/auth/signin', passport.authenticate('local'), UserCtrl.afterLogin);
 
-app.get('/tweet', TweetCtrl.index);
+app.get('/tweets', TweetCtrl.index);
 app.get('/tweet/:id', TweetCtrl.show);
 app.post('/tweet', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.create);
 app.patch('/tweet/:id', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.update);

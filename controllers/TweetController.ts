@@ -7,7 +7,7 @@ import { isValidId } from '../utils/isValidId';
 class TweetController {
   async index(req: Request, res: Response): Promise<void> {
     try {
-      const tweets = await TweetModel.find({}).sort({ createdAt: -1 }).exec();
+      const tweets = await TweetModel.find({}).populate('user').sort({ createdAt: -1 }).exec();
 
       res.json({
         status: 'success',
@@ -22,28 +22,25 @@ class TweetController {
   }
   async create(req: Request, res: Response): Promise<void> {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        res.status(400).json({
-          status: 'error',
-          errors: errors.array(),
-        });
-        return;
-      }
-      const user = req.user as UserModellDocumentInterface;
+      const user = req.user as any;
       if (user?._id) {
-        const data: TweetModelInterface = {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          res.status(400).json({
+            status: 'error',
+            errors: errors.array(),
+          });
+          return;
+        }
+        const data: any = {
           text: req.body.text,
           user: user._id,
         };
-
         const tweet = await TweetModel.create(data);
-
-        // tweet.save();
+        tweet.save();
         res.json({
           status: 'success',
-          //@ts-ignore
-          data: await tweet.populate('user').exec(),
+          data: tweet.populate('user').execPopulate(),
         });
         return;
       }
@@ -57,7 +54,7 @@ class TweetController {
   async show(req: Request, res: Response): Promise<void> {
     try {
       const tweetId = req.params.id;
-      const tweet = await TweetModel.findById(tweetId).exec();
+      const tweet = await TweetModel.findById(tweetId).populate('user').exec();
       if (tweet) {
         res.json({
           status: 'success',
