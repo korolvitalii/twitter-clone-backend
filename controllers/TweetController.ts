@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { TweetModel, TweetModelInterface } from '../models/TweetModel';
+import { TweetModel } from '../models/TweetModel';
 import { UserModellDocumentInterface } from '../models/UserModel';
 import { isValidId } from '../utils/isValidId';
 
@@ -36,17 +36,19 @@ class TweetController {
           text: req.body.text,
           user: user._id,
         };
+        console.log(data);
         const tweet = await TweetModel.create(data);
+        console.log(tweet);
         tweet.save();
         res.json({
           status: 'success',
-          data: tweet.populate('user').execPopulate(),
+          data: await tweet.populate('user'),
         });
         return;
       }
     } catch (error) {
       res.json({
-        status: 'error',
+        status: 'error from catch',
         message: JSON.stringify(error),
       });
     }

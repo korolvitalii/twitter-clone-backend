@@ -9,7 +9,7 @@ export interface TweetModelInterface {
 
 export type TweetModellDocumentInterface = TweetModelInterface & Document;
 
-const TweetSchema = new Schema<TweetModelInterface>(
+const TweetSchema = new Schema<any>(
   {
     text: {
       required: true,
@@ -29,4 +29,4 @@ const TweetSchema = new Schema<TweetModelInterface>(
   },
 );
 
-export const TweetModel = model<TweetModellDocumentInterface>('Tweet', TweetSchema);
+export const TweetModel = model<any>('Tweet', TweetSchema);
