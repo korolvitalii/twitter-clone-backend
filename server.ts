@@ -11,8 +11,6 @@ import { createTweetValidation } from './validators/createTweet';
 
 /*
 TODO:
-1. update tweets
-2.
 
 */
 
