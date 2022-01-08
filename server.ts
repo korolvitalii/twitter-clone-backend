@@ -8,6 +8,7 @@ import './core/db';
 import { passport } from './core/passport';
 import { TweetCtrl } from './controllers/TweetController';
 import { createTweetValidation } from './validators/createTweet';
+import { TopicCtrl } from './controllers/TopicController';
 
 /*
 TODO:
@@ -37,6 +38,8 @@ app.get('/tweet/:id', TweetCtrl.show);
 app.post('/tweet', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.create);
 app.patch('/tweet/:id', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.update);
 app.delete('/tweet/:id', passport.authenticate('jwt'), TweetCtrl.delete);
+
+app.get('/topics', TopicCtrl.index);
 
 app.listen(process.env.PORT, () => {
   console.log('SERVER is RUNNING  ');

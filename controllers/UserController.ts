@@ -37,7 +37,7 @@ class UserController {
         fullname: req.body.fullname,
         username: req.body.username,
         password: generateBcrypt(req.body.password),
-        confirmHash: generateMDS(process.env.SECRET_KEY || Math.random().toString()),
+        confirmHash: generateMDS(Math.random().toString()),
       };
 
       const user = await UserModel.create(data);
@@ -74,14 +74,12 @@ class UserController {
   async verify(req: Request, res: Response): Promise<void> {
     try {
       const hash = req.query.hash;
-
       if (!hash) {
         res.status(400).send();
         return;
       }
       //@ts-ignore
       const user = await UserModel.findOne({ confirmHash: hash }).exec();
-
       if (user) {
         user.confirmed = true;
         user.save();

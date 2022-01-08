@@ -36,9 +36,7 @@ class TweetController {
           text: req.body.text,
           user: user._id,
         };
-        console.log(data);
         const tweet = await TweetModel.create(data);
-        console.log(tweet);
         tweet.save();
         res.json({
           status: 'success',
