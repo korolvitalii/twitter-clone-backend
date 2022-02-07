@@ -4,6 +4,7 @@ import { UserModel, UserModelInterface, UserModellDocumentInterface } from '../m
 import { generateBcrypt, generateMDS } from '../utils/generateHash';
 import { sendMail } from '../utils/sendMail';
 import jwt from 'jsonwebtoken';
+import { isValidId } from '../utils/isValidId';
 
 class UserController {
   async index(req: Request, res: Response): Promise<void> {
@@ -38,6 +39,8 @@ class UserController {
         username: req.body.username,
         password: generateBcrypt(req.body.password),
         confirmHash: generateMDS(Math.random().toString()),
+        bigAvatar: req.body.bigAvatar,
+        smallAvatar: req.body.smallAvatar,
       };
 
       const user = await UserModel.create(data);
@@ -126,6 +129,37 @@ class UserController {
           token: jwt.sign({ data: req.user }, process.env.SECRET_KEY || '123', {
             expiresIn: '30d',
           }),
+        },
+      });
+    } catch (error) {
+      res.status(500).send();
+      return;
+    }
+  }
+  async updateData(req: Request, res: Response): Promise<void> {
+    try {
+      const updatedUser = req.user ? (req.user as UserModellDocumentInterface) : undefined;
+      let userId;
+      if (updatedUser) {
+        userId = updatedUser._id;
+        if (!isValidId(userId)) {
+          res.status(403).send();
+          return;
+        }
+      }
+      const user = await UserModel.findById(userId);
+      if (user) {
+        user.username = req.body.user.username;
+        user.fullname = req.body.user.fullname;
+        user.bigAvatar = req.body.user.bigAvatar;
+        user.smallAvatar = req.body.user.smallAvatar;
+        user.save();
+      }
+
+      res.json({
+        status: 'success',
+        data: {
+          user,
         },
       });
     } catch (error) {

@@ -11,6 +11,8 @@ export interface UserModelInterface {
   location?: string;
   about?: string;
   website?: string;
+  bigAvatar?: string;
+  smallAvatar?: string;
 }
 
 export type UserModellDocumentInterface = UserModelInterface & Document;
@@ -30,6 +32,12 @@ const UserSchema = new Schema<UserModelInterface>(
     fullname: {
       unique: true,
       required: true,
+      type: String,
+    },
+    bigAvatar: {
+      type: String,
+    },
+    smallAvatar: {
       type: String,
     },
     password: {

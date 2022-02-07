@@ -5,6 +5,7 @@ export interface TweetModelInterface {
   _id?: string;
   text: string;
   user: UserModelInterface;
+  images?: string[];
 }
 
 export type TweetModellDocumentInterface = TweetModelInterface & Document;
@@ -22,6 +23,11 @@ const TweetSchema = new Schema<any>(
       ref: 'User',
       type: Schema.Types.ObjectId,
     },
+    images: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,
