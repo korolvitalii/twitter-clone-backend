@@ -153,6 +153,7 @@ class UserController {
         user.fullname = req.body.user.fullname;
         user.bigAvatar = req.body.user.bigAvatar;
         user.smallAvatar = req.body.user.smallAvatar;
+        
         user.save();
       }
 

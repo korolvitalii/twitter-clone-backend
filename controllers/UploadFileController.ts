@@ -5,11 +5,9 @@ class UploadFileController {
   async upload(req: Request, res: Response): Promise<void> {
     try {
       const file = req.file;
-      console.log(file);
       if (file) {
         cloudinary.v2.uploader
           .upload_stream({ resourse_type: 'auto' }, (error, result) => {
-            console.log('error + result', error, result);
             if (error || !result) {
               return res.status(500).json({
                 status: error,

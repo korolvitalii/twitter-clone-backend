@@ -18,7 +18,7 @@ passport.use(
         }
 
         bcrypt.compare(password, user.password, function (err, result) {
-          if (user.confirmed && result) {
+          if (result) {
             return done(null, user);
           } else {
             return done(null, false, { message: 'Wrong Password' });

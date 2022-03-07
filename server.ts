@@ -39,6 +39,7 @@ app.patch('/auth/update', passport.authenticate('jwt'), UserCtrl.updateData);
 app.post('/auth/signin', passport.authenticate('local'), UserCtrl.afterLogin);
 
 app.get('/tweets', TweetCtrl.index);
+app.get('/tweets/user/:id', TweetCtrl.getUserTweets);
 app.get('/tweet/:id', TweetCtrl.show);
 app.post('/tweet', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.create);
 app.patch('/tweet/:id', passport.authenticate('jwt'), createTweetValidation, TweetCtrl.update);

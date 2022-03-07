@@ -132,6 +132,27 @@ class TweetController {
       return;
     }
   }
+  async getUserTweets(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.params.id;
+      if (!isValidId(userId)) {
+        res.status(403).send();
+        return;
+      }
+      const tweet = await TweetModel.find({ user: userId }).populate('user').exec();
+      if (!tweet) {
+        res.status(404).send();
+        return;
+      }
+      res.json({
+        status: 'success',
+        data: tweet,
+      });
+    } catch (error) {
+      res.status(500).send();
+      return;
+    }
+  }
 }
 
 export const TweetCtrl = new TweetController();
